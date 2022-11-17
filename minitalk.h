@@ -6,7 +6,7 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 00:22:53 by peter             #+#    #+#             */
-/*   Updated: 2022/11/17 16:13:53 by pharbst          ###   ########.fr       */
+/*   Updated: 2022/11/17 17:10:37 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <stdbool.h>
 # include <stdio.h>
+# include "libftio/includes/libftio.h"
 
 typedef struct s_parity
 {
@@ -34,5 +35,6 @@ typedef struct s_parity
 }	t_parity;
 
 void	parity_check(bool *block, t_parity *parity);
+void	set_parity_bits(bool *block, t_parity *parity);
 
 # endif

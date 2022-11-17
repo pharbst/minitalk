@@ -6,7 +6,7 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 14:45:38 by peter             #+#    #+#             */
-/*   Updated: 2022/11/17 16:19:34 by pharbst          ###   ########.fr       */
+/*   Updated: 2022/11/17 17:12:16 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,27 +46,31 @@ static bool	**encode_massage(char *str)
 				blocks[block_count][bit_count] = 1;
 			else
 				blocks[block_count][bit_count] = 0;
-			printf("%d", blocks[block_count][bit_count]);
+			// printf("%d", blocks[block_count][bit_count]);
 			*str = *str >> 1;
 			bit_count++;
 			i++;
 		}
-		block_count++;
 	}
 	while (--block_count)
-	{
 		set_parity_bits(blocks[block_count], &parity);
-	}
 	return (blocks);
 }
 
 int	main(int argc, char **argv)
 {
 	bool			**blocks;
-	t_parity		parity;
+	unsigned int	i;
 	
 	if (argc != 2)
 		write(1, "Error: Wrong number of arguments", 32);
 	blocks = encode_massage(argv[1]);
-	
+	i = 0;
+	while (blocks[i])
+	{
+		printf("%p\n", blocks[i]);
+		i++;
+	}
+		printf("%p\n", blocks[i]);
+	return (0);
 }

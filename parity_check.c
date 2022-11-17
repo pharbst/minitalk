@@ -6,7 +6,7 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 00:22:30 by peter             #+#    #+#             */
-/*   Updated: 2022/11/17 16:23:27 by pharbst          ###   ########.fr       */
+/*   Updated: 2022/11/17 17:11:16 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static void	set_parity_bits_helper(bool *block, t_parity *parity)
 
 void	set_parity_bits(bool *block, t_parity *parity)
 {
-	parity_check(block, &parity);
+	parity_check(block, parity);
 	if (parity->q1 % 2 == 1)
 		block[1] = 1;
 	if (parity->q1 % 2 == 1)
@@ -94,5 +94,5 @@ void	set_parity_bits(bool *block, t_parity *parity)
 		block[8] = 1;
 	if (parity->q4 % 2 == 1)
 		parity->q0++;
-	set_parity_bits_helper(block, &parity);
+	set_parity_bits_helper(block, parity);
 }
