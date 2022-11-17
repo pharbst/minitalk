@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_blocks.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: peter <peter@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/15 13:51:39 by peter             #+#    #+#             */
-/*   Updated: 2022/11/17 00:26:19 by peter            ###   ########.fr       */
+/*   Updated: 2022/11/17 16:06:05 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,9 @@ int main()
 	parity_check(massage, &parity);
 	printf("q1 = %d\nq2 = %d\nq3 = %d\nq4 = %d\nq5 = %d\nq6 = %d\nq7 = %d\nq8 = %d\n", q1, q2, q3, q4, q5, q6, q7, q8);
 	if (q1 % 2 == 1)
-	{
-		q0++;
 		massage[1] = 1;
-	}
+	if (q1 % 2 == 1)
+		q0++;
 	if (q2 % 2 == 1)
 	{
 		q0++;

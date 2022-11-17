@@ -12,16 +12,13 @@ void	signal_handler(int signum)
 
 int main()
 {
-	struct sigaction sa;
-	sa.sa_handler = &signal_handler;
-	sa.sa_flags = SA_RESTART;
-	int i = 0;
+	unsigned int x = 245;
+	unsigned int y = 0;
+	if (x % 245 == 0)
+		y = x / 245;
+	else
+		y = x / 245 + 1;
 
-	sigaction(SIGUSR1, &sa, NULL);
-	while (1)
-	{
-		printf("|pid:%d | recieved signals = %i\n", getpid(), x);
-		usleep(1);
-	}
-	return (0);
+	printf("x = %d, y = %d\n", x, y);
+	return 0;
 }

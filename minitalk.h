@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: peter <peter@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 00:22:53 by peter             #+#    #+#             */
-/*   Updated: 2022/11/17 00:24:24 by peter            ###   ########.fr       */
+/*   Updated: 2022/11/17 16:13:53 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <unistd.h>
 # include <signal.h>
 # include <stdlib.h>
+# include <stdbool.h>
 # include <stdio.h>
 
 typedef struct s_parity
@@ -29,6 +30,7 @@ typedef struct s_parity
 	unsigned int	q6;
 	unsigned int	q7;
 	unsigned int	q8;
+	unsigned int	k;
 }	t_parity;
 
 void	parity_check(bool *block, t_parity *parity);
