@@ -1,0 +1,3 @@
+[submodule "libftio"]
+	path = libftio
+	url = https://github.com/pharbst/libft
