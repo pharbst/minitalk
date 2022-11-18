@@ -6,7 +6,7 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 00:22:30 by peter             #+#    #+#             */
-/*   Updated: 2022/11/17 17:11:16 by pharbst          ###   ########.fr       */
+/*   Updated: 2022/11/18 17:19:13 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,24 +75,28 @@ static void	set_parity_bits_helper(bool *block, t_parity *parity)
 		block[0] = 1;
 }
 
-void	set_parity_bits(bool *block, t_parity *parity)
+void	set_parity_bits(bool *block)
 {
-	parity_check(block, parity);
-	if (parity->q1 % 2 == 1)
+	t_parity	parity;
+
+	parity_check(block, &parity);
+	if (parity.q1 % 2 == 1)
 		block[1] = 1;
-	if (parity->q1 % 2 == 1)
-		parity->q0++;
-	if (parity->q2 % 2 == 1)
+	if (parity.q1 % 2 == 1)
+		parity.q0++;
+	if (parity.q2 % 2 == 1)
 		block[2] = 1;
-	if (parity->q2 % 2 == 1)
-		parity->q0++;
-	if (parity->q3 % 2 == 1)
+	if (parity.q2 % 2 == 1)
+		parity.q0++;
+	if (parity.q3 % 2 == 1)
 		block[4] = 1;
-	if (parity->q3 % 2 == 1)
-		parity->q0++;
-	if (parity->q4 % 2 == 1)
+	if (parity.q3 % 2 == 1)
+		parity.q0++;
+	if (parity.q4 % 2 == 1)
 		block[8] = 1;
-	if (parity->q4 % 2 == 1)
-		parity->q0++;
-	set_parity_bits_helper(block, parity);
+	if (parity.q4 % 2 == 1)
+		parity.q0++;
+	set_parity_bits_helper(block, &parity);
+	printf("\n\n\nq0 = %d\nq1 = %d\nq2 = %d\nq3 = %d\nq4 = %d\nq5 = %d\nq6 = %d\nq7 = %d\nq8 = %d\n", parity.q0, parity.q1, parity.q2, parity.q3, parity.q4, parity.q5, parity.q6, parity.q7, parity.q8);
+	fflush(stdout);
 }
