@@ -6,7 +6,7 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 14:45:38 by peter             #+#    #+#             */
-/*   Updated: 2022/11/17 18:38:03 by pharbst          ###   ########.fr       */
+/*   Updated: 2022/11/21 14:51:53 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	main(int argc, char **argv)
 	bool			**blocks;
 	unsigned int	i;
 	unsigned int	k;
-	
+
 	if (argc != 2)
 		write(1, "Error: Wrong number of arguments", 32);
 	blocks = encode_massage(argv[1]);
