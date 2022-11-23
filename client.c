@@ -1,54 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/22 16:56:34 by pharbst           #+#    #+#             */
+/*   Updated: 2022/11/23 19:53:38 by pharbst          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minitalk.h"
 
-bool	g_flag;
-char	*g_massage;
-int		g_i;
-
-void	sig_connect(int sig)
+int	main(int argc, char **argv)
 {
-	ft_printf("Connection established\n");
-	g_flag = true;
-}
+	int	pid;
 
-bool	connect(int pid)
-{
-	int	i;
-	int	j;
-
-	signal(SIGUSR1, sig_connect);
-	i = 0;
-	while (i < 5 && g_flag == false)
-	{
-		kill(pid, SIGUSR1);
-		j = 0;
-		while (j < 32 && g_flag == false)
-		{
-			usleep(10);
-			j++;
-		}
-		i++;
-	}
-	if (g_flag == false)
-		return (false);
-	return (true);
-}
-
-void	send_massage(int pid, char *str)
-{
-	signal(SIGUSR1, sig_massage);
-}
-
-int main(int argc, char **argv)
-{
-	bool	connected;
-
+	ft_printf("your pid: %d\n", getpid());
 	if (argc != 3)
-		return (ft_printf("Error: wrong number of arguments\npls enter PID of the server as first argument and message as second argument\n"), 0);
-	connected = connect(atoi(argv[1]));
-	g_massage = argv[2];
-	if (connected == false)
-		return (ft_printf("Error: Server not reachable or busy\n", atoi(argv[1])), 0);
-	else
-		send_message(atoi(argv[1]));
+		return (ft_printf("Error: wrong number of arguments\n"), 0);
+	pid = atoi(argv[1]);
+	if (pid <= 0)
+		return (ft_printf("Error: PID must be a positive number\n"), 0);
+	connect(pid);
+	send_massage(pid, argv[2]);
 	return (0);
 }
