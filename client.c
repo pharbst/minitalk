@@ -1,43 +1,54 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/17 14:45:38 by peter             #+#    #+#             */
-/*   Updated: 2022/11/21 14:51:53 by pharbst          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minitalk.h"
 
-int	main(int argc, char **argv)
-{
-	bool			**blocks;
-	unsigned int	i;
-	unsigned int	k;
+bool	g_flag;
+char	*g_massage;
+int		g_i;
 
-	if (argc != 2)
-		write(1, "Error: Wrong number of arguments", 32);
-	blocks = encode_massage(argv[1]);
+void	sig_connect(int sig)
+{
+	ft_printf("Connection established\n");
+	g_flag = true;
+}
+
+bool	connect(int pid)
+{
+	int	i;
+	int	j;
+
+	signal(SIGUSR1, sig_connect);
 	i = 0;
-	while (blocks[i])
+	while (i < 5 && g_flag == false)
 	{
-		printf("%p\n", blocks[i]);
-		k = 0;
-		while (k < 256)
+		kill(pid, SIGUSR1);
+		j = 0;
+		while (j < 32 && g_flag == false)
 		{
-			if (k == 0 || k == 1 || k == 2 || k == 4 || k == 8 || k == 16 || k == 32 || k == 64 || k == 128)
-				printf("\033[0;31m");
-			if (k % 16 == 0 && k != 0)
-				printf("\n");
-			printf("%d \033[0;37m", blocks[i][k]);
-			k++;
+			usleep(10);
+			j++;
 		}
-		printf("\n\n\n");
 		i++;
 	}
-	printf("%p\n", blocks[i]);
+	if (g_flag == false)
+		return (false);
+	return (true);
+}
+
+void	send_massage(int pid, char *str)
+{
+	signal(SIGUSR1, sig_massage);
+}
+
+int main(int argc, char **argv)
+{
+	bool	connected;
+
+	if (argc != 3)
+		return (ft_printf("Error: wrong number of arguments\npls enter PID of the server as first argument and message as second argument\n"), 0);
+	connected = connect(atoi(argv[1]));
+	g_massage = argv[2];
+	if (connected == false)
+		return (ft_printf("Error: Server not reachable or busy\n", atoi(argv[1])), 0);
+	else
+		send_message(atoi(argv[1]));
 	return (0);
 }
