@@ -6,7 +6,7 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:56:34 by pharbst           #+#    #+#             */
-/*   Updated: 2022/11/23 04:18:03 by pharbst          ###   ########.fr       */
+/*   Updated: 2022/11/23 17:25:48 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	connect(int pid)
 	i = 0;
 	while (i < 5 && g_connected == false)
 	{
+		ft_printf("Connection signal sent\n");
 		kill(pid, SIGUSR1);
 		j = 0;
 		while (j < 32 && g_connected == false)
@@ -49,6 +50,7 @@ void	connect(int pid)
 void	sig_send(int sig)
 {
 	g_flag = true;
+	// ft_printf("Signal received\n");
 }
 
 void	send_massage(int pid, char *massage)
@@ -65,14 +67,20 @@ void	send_massage(int pid, char *massage)
 	bit = 7;
 	index = 0;
 	len = ft_strlen(massage);
-	write(1, "Debug here\n", 11);
+	// write(1, "Debug here\n", 11);
 	c = massage[index];
 	while (trys < 10 && index <= len)
 	{
 		if ((c >> bit) % 2 == 1)
+		{
+			// ft_printf("1 sent\n");
 			kill(pid, SIGUSR1);
+		}
 		else
+		{
+			// ft_printf("0 sent\n");
 			kill(pid, SIGUSR2);
+		}
 		response = 0;
 		while (g_flag == false && response++ < 500)
 			usleep(1);
@@ -101,6 +109,7 @@ int	main(int argc, char **argv)
 {
 	int	pid;
 	
+	ft_printf("pid: %d\n", getpid());
 	if (argc != 3)
 		return (ft_printf("Error: wrong number of arguments\npls enter PID of the server as first argument and message as second argument\n"), 0);
 	pid = atoi(argv[1]);
