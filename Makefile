@@ -6,7 +6,7 @@
 #    By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/19 18:08:33 by pharbst           #+#    #+#              #
-#    Updated: 2023/08/25 00:24:32 by pharbst          ###   ########.fr        #
+#    Updated: 2023/08/25 16:17:11 by pharbst          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,11 +23,12 @@ include color.mk
 # Variables
 # **************************************************************************** #
 
-NAME		:= server client
+NAME		:=	server\
+				client
 
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror
-# CFLAGS		:=	-Wall -Werror -Wextra -Wunreachable-code -g
+CFLAGS		:=	-Wall -Werror -Wextra -Wunreachable-code -g
 # CFLAGS		+=	-fsanitize=address
 
 LIBFT		:=	./libft
@@ -44,7 +45,7 @@ VPATH		:=	src src/server src/client
 SRC			:=	client.c client_help.c server.c
 
 ODIR		:=	obj
-OBJS		:=	$(SRCS_SERVER:%.c=$(ODIR)/%.o)
+OBJS		:=	$(SRC:%.c=$(ODIR)/%.o)
 
 # **************************************************************************** #
 # Compilation Rules
@@ -66,19 +67,25 @@ endif
 	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
 	@./spinner.sh $(MAKE) -j -s -C $(LIBFT) >/dev/null
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)$(NAME) ..."	
-	@./spinner.sh $(MAKE) -s $(NAME)
+	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)Server ..."	
+	@./spinner.sh $(MAKE) -s server
+	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
+	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)Client ..."	
+	@./spinner.sh $(MAKE) -s client
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBS) $(INC) -o $(NAME)
+client:	$(OBJS)
+	$(CC) $(CFLAGS) $(INC) $(ODIR)/client.o $(LIBS) $(ODIR)/client_help.o -o client
+
+server: $(ODIR)/server.o
+	$(CC) $(CFLAGS) $(INC) $(ODIR)/server.o $(LIBS) -o server
 	
 
-$(ODIR)/%.o: %.c $(HEADER) | $(ODIR)
+$(ODIR)/%.o : %.c $(ODIR)
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(ODIR):
-	mkdir -p $@
+	@mkdir -p $@
 
 libft:
 	@$(MAKE) -j -s -C $(LIBFT) $(MAKECMDGOALS) >/dev/null
@@ -106,7 +113,7 @@ cleanator:
 	@$(RM) -rf $(NAME)
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
 
-re:
+re: libft
 	@$(MAKE) -s proname_header
 	@$(MAKE) -s cleanator
 	@$(MAKE) -s std_all
