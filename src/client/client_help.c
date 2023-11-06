@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_help.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 19:26:01 by pharbst           #+#    #+#             */
-/*   Updated: 2022/11/23 19:53:53 by pharbst          ###   ########.fr       */
+/*   Updated: 2023/11/02 05:02:15 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	send_massage(int pid, char *massage)
 {
 	t_send	send;
 
-	signal(SIGUSR1, sig_send);
+	signal(SIGUSR1, &sig_send);
 	send.trys = 0;
 	send.pid = pid;
 	send.bit = 7;
@@ -100,3 +100,8 @@ void	send_massage(int pid, char *massage)
 	else
 		ft_printf("Message got printed\n");
 }
+
+start = 8bit {establish connection = 1bit, massage length bit length = 7bit (max 64bits)}
+4294967296 = 32bit
+unicode:
+18446744073709551616 = 64bit

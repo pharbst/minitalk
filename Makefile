@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+         #
+#    By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/19 18:08:33 by pharbst           #+#    #+#              #
-#    Updated: 2023/08/25 00:24:32 by pharbst          ###   ########.fr        #
+#    Updated: 2023/11/02 03:02:50 by pharbst          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -117,6 +117,13 @@ re:
 # **************************************************************************** #
 
 proname_header:
-	@printf "header space\n"
+	@printf "$(FCyan)╔══════════════════════════════════════════════════════════╗$(RESET)\n\
+$(FCyan)║ $(FPurple)           _       _                                     $(FCyan)║\n\
+$(FCyan)║ $(FPurple)          (_)     (_)   ████████  █████  ██      ██   ██ $(FCyan)║\n\
+$(FCyan)║ $(FPurple) _ __ ___  _ _ __  _       ██    ██   ██ ██      ██  ██  $(FCyan)║\n\
+$(FCyan)║ $(FPurple)| \'_ \` _ \\| | \'_ \\| |      ██    ███████ ██      █████   $(FCyan)║\n\
+$(FCyan)║ $(FPurple)| | | | | | | | | | |      ██    ██   ██ ██      ██  ██  $(FCyan)║\n\
+$(FCyan)║ $(FPurple)|_| |_| |_|_|_| |_|_|      ██    ██   ██ ███████ ██   ██ $(FCyan)║\n\
+$(FCyan)╚══════════════════════════════════════════════════════════╝\n$(RESET)"
 
 .PHONY: all std_all $(NAME) server client libft clean fclean re std_clean cleanator

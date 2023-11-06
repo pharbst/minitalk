@@ -1,49 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   new_minitalk.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/17 00:22:53 by peter             #+#    #+#             */
-/*   Updated: 2023/11/05 19:43:37 by pharbst          ###   ########.fr       */
+/*   Created: 2023/11/02 03:21:05 by pharbst           #+#    #+#             */
+/*   Updated: 2023/11/06 02:23:10 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#ifndef NEW_MINITALK_H
+# define NEW_MINITALK_H
 
 # include <unistd.h>
 # include <signal.h>
 # include <stdlib.h>
 # include <stdbool.h>
-# include <stdio.h>
-# include <limits.h>
-# include "libft/includes/libftio.h"
 
-typedef struct s_send
+// Client
+
+typedef struct s_payload
 {
-	char	c;
-	int		trys;
-	int		pid;
-	int		len;
-	int		response;
-	int		index;
-	int		bit;
-	char	*massage;
-}				t_send;
+	char*			message;
+	unsigned int	message_len;
+	bool			connection;
+	bool			busy;
+	int 			dest_pid;
+}				t_payload;
 
-typedef struct s_handler
+t_payload*	get_payload(void);
+
+void		sig_connect(int sig);
+void		sig_controll(int sig);
+
+// Server
+
+typedef struct t_server
 {
-	int			j;
-	int			pid;
-	int			sig;
-	int			i[4194304];
-	bool		flag[4194304];
-	char		*c[4194304][(INT_MAX / 1024) / 1024];
-}	t_handler;
-
-void	send_massage(int pid, char *massage);
-void	connect(int pid);
+	char				*message;
+	unsigned int		message_len;
+	int					pid;
+	int					bit;
+	int					signal;
+}
 
 #endif
