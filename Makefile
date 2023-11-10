@@ -6,7 +6,7 @@
 #    By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/19 18:08:33 by pharbst           #+#    #+#              #
-#    Updated: 2023/11/02 03:02:50 by pharbst          ###   ########.fr        #
+#    Updated: 2023/11/11 00:38:48 by pharbst          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ include color.mk
 # Variables
 # **************************************************************************** #
 
-NAME		:= server client
+NAME		:= server
 
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror
@@ -31,7 +31,7 @@ CFLAGS		:= -Wall -Wextra -Werror
 # CFLAGS		+=	-fsanitize=address
 
 LIBFT		:=	./libft
-HEADER		:=	./minitalk.h
+HEADER		:=	./new_minitalk.h
 ifeq ($(UNAME), Darwin)
 LIBS		:=	$(LIBFT)/libftio.a
 else
@@ -41,7 +41,9 @@ endif
 INC			:=	-I ./includes -I $(LIBFT)/includes
 VPATH		:=	src src/server src/client
 
-SRC			:=	client.c client_help.c server.c
+SRC			:=	new_server.c \
+				new_server_helper.c \
+				new_server_utils.c
 
 ODIR		:=	obj
 OBJS		:=	$(SRCS_SERVER:%.c=$(ODIR)/%.o)
@@ -59,14 +61,14 @@ all:
 
 std_all:
 ifneq ($($(LIBFT)/Makefile), "")
-	@printf "%-67s$(RESET)" "$(Yellow)Updating $(FCyan)submodule ..."
+	@printf "%-64s$(RESET)" "$(Yellow)Updating $(FCyan)submodule ..."
 	@git submodule update --init >/dev/null 2>&1
 endif
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
+	@printf "%-64s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
 	@./spinner.sh $(MAKE) -j -s -C $(LIBFT) >/dev/null
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)$(NAME) ..."	
+	@printf "%-64s$(RESET)" "$(Yellow)Compiling $(FCyan)$(NAME) ..."	
 	@./spinner.sh $(MAKE) -s $(NAME)
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
 
@@ -92,7 +94,7 @@ clean:	libft
 	@$(MAKE) -s std_clean
 
 std_clean:
-	@printf "%-67s$(RESET)" "$(Yellow)Cleaning up..."
+	@printf "%-64s$(RESET)" "$(Yellow)Cleaning up..."
 	@$(RM) -rf $(ODIR)
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
 
@@ -101,7 +103,7 @@ fclean: libft
 	@$(MAKE) -s cleanator
 
 cleanator:
-	@printf "%-67s$(RESET)" "$(Yellow)FCleaning up..."
+	@printf "%-64s$(RESET)" "$(Yellow)FCleaning up..."
 	@$(RM) -rf $(ODIR)
 	@$(RM) -rf $(NAME)
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"

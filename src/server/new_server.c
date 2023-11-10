@@ -6,35 +6,14 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 00:18:24 by pharbst           #+#    #+#             */
-/*   Updated: 2023/11/07 05:04:13 by pharbst          ###   ########.fr       */
+/*   Updated: 2023/11/11 00:39:13 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "new_minitalk.h"
 #include "libftio.h"
 
-void	server_sig_handler(int sig, siginfo_t *info, void *ucontext)
-{
-	int			pid;
-	t_client	client;
-	static int	busy;
-
-	pid = info->si_pid;
-	if (exist(pid) && busy)
-		kill(pid, SIGUSR2);
-	else if (exist(pid) && !busy)
-	{
-		add(pid);
-		busy = pid;
-		kill(pid, SIGUSR1);
-	}
-	else if (busy == pid )
-	{
-		// reieving controll bits
-	}
-	else if (busy && busy != pid)
-		kill(pid, SIGUSR2);
-}
+static void	server_sig_handler(int sig, siginfo_t *info, void *ucontext);
 
 int	main(void)
 {
@@ -47,5 +26,35 @@ int	main(void)
 	sigaction(SIGUSR2, &sa, NULL);
 	ft_printf("Server PID: %d\n", getpid());
 	while (1)
-		pause();
+		check_timeout();
+	return (0);
+}
+
+static void	server_sig_handler(int sig, siginfo_t *info, void *ucontext)
+{
+	static t_busy	busy;
+	int				*pids;
+	t_client		*clients;
+
+	clients = get_clients();
+	pids = get_pids();
+	if (busy.flag)
+	{
+		if (busy.pid != info->si_pid && get_index(info->si_pid, pids, false) >> 31)
+			return (kill(info->si_pid, SIGUSR2));
+		else if (busy.pid != info->si_pid)
+			return (pause_client(&clients[get_index(info->si_pid, pids, false)]));
+		return (controll_bits(sig, &clients[get_index(busy.pid, pids, false)], &busy));
+	}
+	if (get_index(info->si_pid, pids, false) >> 31)
+	{
+		if (sig != SIGUSR1)
+			return ;
+		if (get_index(info->si_pid, pids, true) >> 31)
+			return (kill(info->si_pid, SIGUSR2));
+		pids[get_index(info->si_pid, pids, true)] = info->si_pid;
+		new_client(&clients[get_index(info->si_pid, pids, true)], info->si_pid);
+		return ;
+	}
+	interpreter(&clients[get_index(info->si_pid, pids, false)], sig, false);
 }
