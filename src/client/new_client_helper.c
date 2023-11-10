@@ -6,11 +6,13 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 00:08:44 by pharbst           #+#    #+#             */
-/*   Updated: 2023/11/07 06:06:49 by pharbst          ###   ########.fr       */
+/*   Updated: 2023/11/10 06:25:12 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "new_minitalk.h"
+#include "libftio.h"
+#include <stdio.h>
 
 void	sending_loop(unsigned int what, int bit)
 {
@@ -54,7 +56,10 @@ void	sig_controll(int sig)
 
 	payload = get_payload();
 	if (sig == SIGUSR1)
+	{
 		payload->answerd = true;
+		payload->busy = false;
+	}
 	else if (sig == SIGUSR2)
 	{
 		payload->answerd = true;

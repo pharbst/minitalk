@@ -6,12 +6,17 @@
 /*   By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 03:32:14 by pharbst           #+#    #+#             */
-/*   Updated: 2023/11/07 06:04:13 by pharbst          ###   ########.fr       */
+/*   Updated: 2023/11/10 06:38:46 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "new_minitalk.h"
 #include "libftio.h"
+#include <stdio.h>
+
+int		sending(int bit_len, unsigned int what);
+void	connect(void);
+void	send_message(void);
 
 int	main(int argc, char **argv)
 {
@@ -44,22 +49,46 @@ void	connect(void)
 
 	signal(SIGUSR1, &sig_connect);
 	signal(SIGUSR2, &sig_connect);
-	t_payload		*payload;
 	sending_loop(0, 1);
+	payload = get_payload();
 	if (!payload->answerd)
 	{
 		ft_putstr_fd("Error: Server is not responding\n", 1);
 		exit(0);
 	}
+	signal(SIGUSR1, &sig_controll);
+	signal(SIGUSR2, &sig_controll);
 	if (sending(32, payload->message_len))
 		exit(0);
+}
+
+void	debug_function1(unsigned int what)
+{
+	int	i;
+
+	i = 0;
+	while (i < 32)
+	{
+		if ((what >> (31 - i)) % 2)
+			ft_putchar_fd('1', 1);
+		else
+			ft_putchar_fd('0', 1);
+		if (i % 8 == 7)
+		{
+			ft_putstr_fd(" = ", 1);
+			ft_putchar_fd(what >> (31 - i), 1);
+			ft_putchar_fd('\n', 1);
+		}
+		i++;
+	}
+	ft_putchar_fd('\n', 1);
 }
 
 void	send_message(void)
 {
 	unsigned int	what;
 	unsigned int	byte;
-	unsigned int	i;
+	int				i;
 	t_payload		*payload;
 
 	signal(SIGUSR1, &sig_controll);
@@ -71,18 +100,19 @@ void	send_message(void)
 		while (i < 4)
 		{
 			if (byte + i < payload->message_len)
-				what |= payload->message[byte + i] << (8 * i);
+				what = what << 8 | payload->message[byte + i];
 			else
 				what = what << 8;
 			i++;
 		}
+		debug_function1(what);
 		if (sending(32, what))
 			exit(0);
 		byte += 4;
 	}
 }
 
-int	sending(unsigned int bit_len, unsigned int what)
+int	sending(int bit_len, unsigned int what)
 {
 	unsigned int	bit;
 	unsigned int	i;
@@ -90,7 +120,7 @@ int	sending(unsigned int bit_len, unsigned int what)
 	t_payload		*payload;
 
 	payload = get_payload();
-	while (--bit_len >= 0 && payload->answerd)
+	while ((--bit_len >= 0) && payload->answerd)
 		sending_loop(what, bit_len);
 	if (!payload->answerd)
 			return (ft_putstr_fd("Error: lost connection to server\n", 1), 1);
