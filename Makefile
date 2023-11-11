@@ -6,7 +6,7 @@
 #    By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/19 18:08:33 by pharbst           #+#    #+#              #
-#    Updated: 2023/11/11 00:38:48 by pharbst          ###   ########.fr        #
+#    Updated: 2023/11/11 03:59:43 by pharbst          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ include color.mk
 # Variables
 # **************************************************************************** #
 
-NAME		:= server
+NAME		:=	server
 
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror
@@ -39,14 +39,20 @@ LIBS		:=	$(LIBFT)/libftio_linux.a
 endif
 
 INC			:=	-I ./includes -I $(LIBFT)/includes
-VPATH		:=	src src/server src/client
+VPATH		:=	src ./src/server ./src/client
 
-SRC			:=	new_server.c \
+server_src	:=	new_server.c \
 				new_server_helper.c \
 				new_server_utils.c
 
-ODIR		:=	obj
-OBJS		:=	$(SRCS_SERVER:%.c=$(ODIR)/%.o)
+client_src	:=	new_client.c \
+				new_client_helper.c
+
+ODIR		:=	./obj
+
+server_obj	:=	$(addprefix $(ODIR)/, $(server_src:.c=.o))
+# server_obj	:=	$(server_src:%.c=$(ODIR)/%.o)
+client_obj	:=	$(client_src:%.c=$(ODIR)/%.o)
 
 # **************************************************************************** #
 # Compilation Rules
@@ -60,23 +66,31 @@ all:
 # **************************************************************************** #
 
 std_all:
-ifneq ($($(LIBFT)/Makefile), "")
+ifeq ($($(LIBFT)/Makefile), "")
 	@printf "%-64s$(RESET)" "$(Yellow)Updating $(FCyan)submodule ..."
 	@git submodule update --init >/dev/null 2>&1
-endif
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-64s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
+endif
+	@printf "%-71s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
 	@./spinner.sh $(MAKE) -j -s -C $(LIBFT) >/dev/null
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-64s$(RESET)" "$(Yellow)Compiling $(FCyan)$(NAME) ..."	
-	@./spinner.sh $(MAKE) -s $(NAME)
+	@printf "%-64s$(RESET)" "$(Yellow)Compiling $(FCyan)server ..."	
+	@./spinner.sh $(MAKE) -s server
+	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
+	@printf "%-64s$(RESET)" "$(Yellow)Compiling $(FCyan)client ..."	
+	@./spinner.sh $(MAKE) -s client
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBS) $(INC) -o $(NAME)
+server: $(ODIR) $(server_obj)
+	@echo "$(CC) $(CFLAGS) $(server_obj) $(LIBS) $(INC) -o $@"
+	$(CC) $(CFLAGS) $(server_obj) $(LIBS) $(INC) -o $@
+
+client: $(client_obj)
+	@echo "$(CC) $(CFLAGS) $(client_obj) $(LIBS) $(INC) -o $@"
+	$(CC) $(CFLAGS) $(client_obj) $(LIBS) $(INC) -o $@
 	
 
-$(ODIR)/%.o: %.c $(HEADER) | $(ODIR)
+$(ODIR)/%.o : %.c $(HEADER) | $(ODIR)
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(ODIR):
