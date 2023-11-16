@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+         #
+#    By: pharbst <pharbst@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/22 14:24:08 by pharbst           #+#    #+#              #
-#    Updated: 2023/11/12 03:44:45 by pharbst          ###   ########.fr        #
+#    Updated: 2023/11/16 11:06:36 by pharbst          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ CFLAGS	:=	-Wextra -Wall -Werror
 # CFLAGS	+=	-fsanitize=address
 
 LIBFT	:=	./libft
-HEADER	:=	./includes/new_minitalk.h
+HEADER	:=	./includes/minitalk.h
 ifeq ($(UNAME), Darwin)
 LIBS	:=	$(LIBFT)/libftio.a
 else
@@ -34,12 +34,12 @@ endif
 INC		:=	-I ./includes -I $(LIBFT)/includes
 VPATH	:=	src src/client src/server
 
-S_SRCS	:=	new_server.c \
-			new_server_helper.c \
-			new_server_utils.c
+S_SRCS	:=	server.c \
+			server_helper.c \
+			server_utils.c
 
-C_SRCS	:=	new_client.c \
-			new_client_helper.c
+C_SRCS	:=	client.c \
+			client_helper.c
 
 ODIR	:=	obj
 
@@ -56,39 +56,28 @@ all:
 	
 std_all:
 ifneq ($($(LIBFT)/Makefile), "")
-	@printf "%-67s$(RESET)" "$(Yellow)Updating $(FCyan)submodule ..."
+	@printf "%-71s$(RESET)" "$(Yellow)Updating $(FCyan)submodule ..."
 	@git submodule update --init >/dev/null 2>&1
 endif
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
+	@printf "%-71s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
 	@./spinner.sh $(MAKE) -j -s -C $(LIBFT) >/dev/null
-	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)$(NAME) ..."	
-	@./spinner.sh $(MAKE) -s $(NAME)
-	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-
-bonus:
-	@$(MAKE) -s proname_header
-	@$(MAKE) -s std_bonus
-
-std_bonus:
-ifneq ($($(LIBFT)/Makefile), "")
-	@printf "%-67s$(RESET)" "$(Yellow)Updating $(FCyan)submodule ..."
-	@git submodule update --init >/dev/null 2>&1
-endif
-	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)libft ..."
-	@./spinner.sh $(MAKE) -j -s -C $(LIBFT) >/dev/null
-	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
+	@printf "$(FGreen)[$(TICK)]\n$(RESET)"	
 	@./spinner.sh $(MAKE) -s $(NAME)
 
 $(NAME): 
-	@printf "\n%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)Server ..."
+	@printf "%-71s\n$(RESET)" "$(Yellow)Compiling $(FCyan)Server ..."
 	@$(MAKE) -s server
+	@printf "$(CLEARLINE)"
+	@printf "$(SETCURUP)"
+	@printf "%-71s$(RESET)" "$(Yellow)Compiling $(FCyan)Server ..."
 	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
-	@printf "%-67s$(RESET)" "$(Yellow)Compiling $(FCyan)Client ..."
+	@printf "%-71s\n$(RESET)" "$(Yellow)Compiling $(FCyan)Client ..."
 	@$(MAKE) -s client
-	@printf "$(FGreen)[$(TICK)]$(RESET)"
+	@printf "$(CLEARLINE)"
+	@printf "$(SETCURUP)"
+	@printf "%-71s$(RESET)" "$(Yellow)Compiling $(FCyan)Client ..."
+	@printf "$(FGreen)[$(TICK)]\n$(RESET)"
 
 server: $(ODIR) $(S_OBJS)
 	@$(CC) $(CFLAGS) $(S_OBJS) $(LIBS) $(INC) -o $@
@@ -97,9 +86,11 @@ client: $(ODIR) $(C_OBJS)
 	@$(CC) $(CFLAGS) $(C_OBJS) $(LIBS) $(INC) -o $@
 
 $(ODIR)/%.o: %.c $(HEADER) | $(ODIR)
+	@printf "%-50s$(RESET)\r" "$(Green)Compiling $< ..."
 	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(ODIR):
+	@printf "$(CLEARLINE)$(SETCURSTART)$(Yellow)Creating objectdirectory ..."
 	@mkdir -p $@
 
 libft:
@@ -114,7 +105,7 @@ clean:	libft
 	@$(MAKE) -s std_clean
 
 std_clean:
-	@printf "%-60s$(RESET)" "$(FPurple)Cleaning up ..."
+	@printf "%-64s$(RESET)" "$(FPurple)Cleaning up ..."
 	@$(RM) -rf $(ODIR)
 	@printf "$(FGreen)$(TICKBOX)\n$(RESET)"
 
@@ -123,9 +114,9 @@ fclean:	libft
 	@$(MAKE) -s cleanator
 
 cleanator:
-	@printf "%-60s$(RESET)" "$(FPurple)FCleaning up ..."
+	@printf "%-64s$(RESET)" "$(FPurple)FCleaning up ..."
 	@$(RM) -rf $(ODIR)
-	@$(RM) -rf $(NAME)
+	@$(RM) -rf server client
 	@printf "$(FGreen)$(TICKBOX)\n$(RESET)"
 
 re:
@@ -138,13 +129,11 @@ re:
 # **************************************************************************** #
 
 proname_header:
-	@printf "$(FCyan)╔══════════════════════════════════════════════════════╗$(RESET)\n\
-$(FCyan)║$(FPurple)  _____           _        _____                      $(FCyan)║\n\
-$(FCyan)║$(FPurple) |  __ \\         | |      / ____|                     $(FCyan)║\n\
-$(FCyan)║$(FPurple) | |__) |   _ ___| |__   | (_____      ____ _ _ __    $(FCyan)║\n\
-$(FCyan)║$(FPurple) |  ___/ | | / __| \'_ \\   \\___ \\ \\ /\\ / / _\` | \'_ \\   $(FCyan)║\n\
-$(FCyan)║$(FPurple) | |   | |_| \\__ \\ | | |  ____) \\ V  V / (_| | |_) |  $(FCyan)║\n\
-$(FCyan)║$(FPurple) |_|    \\__,_|___/_| |_| |_____/ \\_/\\_/ \\__,_| .__/   $(FCyan)║\n\
-$(FCyan)║$(FPurple)                     ______                  | |      $(FCyan)║\n\
-$(FCyan)║$(FPurple)                    |______|                 |_|      $(FCyan)║\n\
-$(FCyan)╚══════════════════════════════════════════════════════╝\n$(RESET)"
+	@printf "$(FCyan)╔══════════════════════════════════════════════════════════╗$(RESET)\n\
+$(FCyan)║ $(FPurple)           _       _                                     $(FCyan)║\n\
+$(FCyan)║ $(FPurple)          (_)     (_)   ████████  █████  ██      ██   ██ $(FCyan)║\n\
+$(FCyan)║ $(FPurple) _ __ ___  _ _ __  _       ██    ██   ██ ██      ██  ██  $(FCyan)║\n\
+$(FCyan)║ $(FPurple)| \'_ \` _ \\| | \'_ \\| |      ██    ███████ ██      █████   $(FCyan)║\n\
+$(FCyan)║ $(FPurple)| | | | | | | | | | |      ██    ██   ██ ██      ██  ██  $(FCyan)║\n\
+$(FCyan)║ $(FPurple)|_| |_| |_|_|_| |_|_|      ██    ██   ██ ███████ ██   ██ $(FCyan)║\n\
+$(FCyan)╚══════════════════════════════════════════════════════════╝\n$(RESET)"

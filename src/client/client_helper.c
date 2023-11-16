@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   new_client_helper.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pharbst <pharbst@student.42heilbronn.de>   +#+  +:+       +#+        */
+/*   By: pharbst <pharbst@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 00:08:44 by pharbst           #+#    #+#             */
-/*   Updated: 2023/11/10 06:25:12 by pharbst          ###   ########.fr       */
+/*   Updated: 2023/11/16 10:59:24 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "new_minitalk.h"
-#include "libftio.h"
-#include <stdio.h>
+#include "minitalk.h"
 
 void	sending_loop(unsigned int what, int bit)
 {
@@ -35,7 +33,7 @@ void	sending_loop(unsigned int what, int bit)
 			else
 				kill(payload->dest_pid, SIGUSR1);
 			j = 0;
-			while (!payload->answerd && j++ < 1280)
+			while (!payload->answerd && j++ < 128000)
 				usleep(1);
 			if (payload->busy)
 				usleep(128000);
@@ -43,7 +41,7 @@ void	sending_loop(unsigned int what, int bit)
 	}
 }
 
-t_payload*	get_payload(void)
+t_payload	*get_payload(void)
 {
 	static t_payload	_payload;
 
@@ -74,7 +72,7 @@ void	sig_connect(int sig)
 	payload = get_payload();
 	if (sig == SIGUSR1)
 	{
-		ft_printf("Connection confirmed\n");
+		ft_printf("Client: Connection confirmed\n");
 		payload->connection = true;
 		payload->busy = false;
 		payload->answerd = true;

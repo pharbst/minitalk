@@ -3,95 +3,75 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pharbst <pharbst@student.42heilbronn.de    +#+  +:+       +#+        */
+/*   By: pharbst <pharbst@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/21 14:45:06 by pharbst           #+#    #+#             */
-/*   Updated: 2022/11/23 19:53:20 by pharbst          ###   ########.fr       */
+/*   Created: 2023/11/14 23:46:08 by pharbst           #+#    #+#             */
+/*   Updated: 2023/11/16 10:53:11 by pharbst          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	print_massage(char **block)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	while (block[i])
-	{
-		j = 0;
-		while (block[i][j] && j < 1024)
-		{
-			ft_printf("%c", block[i][j]);
-			j++;
-		}
-		i++;
-	}
-}
-
-void	handler_helper(t_handler *a)
-{
-	if (a->i[a->pid] < 0)
-		kill(a->pid, SIGUSR2);
-	if (!a->c[a->pid][(a->i[a->pid] / 8) / 1024])
-		a->c[a->pid][(a->i[a->pid] / 8) / 1024] = ft_calloc(1025, sizeof(char));
-	if (a->sig == SIGUSR1)
-		a->c[a->pid][(a->i[a->pid] / 8) / 1024][(a->i[a->pid] / 8) % 1024]
-			= (a->c[a->pid][(a->i[a->pid] / 8)
-				/ 1024][(a->i[a->pid] / 8) % 1024] << 1) + 1;
-	if (a->sig == SIGUSR2)
-		a->c[a->pid][(a->i[a->pid] / 8) / 1024][(a->i[a->pid] / 8) % 1024]
-			= (a->c[a->pid][(a->i[a->pid]
-					/ 8) / 1024][(a->i[a->pid] / 8) % 1024] << 1);
-	a->j = 0;
-	if (a->i[a->pid] / 8 != 0 && a->i[a->pid] % 8 == 7
-		&& a->c[a->pid][(a->i[a->pid] / 8)
-		/ 1024][(a->i[a->pid] / 8) % 1024] == '\0')
-	{
-		print_massage(a->c[a->pid]);
-		write(1, "\n", 1);
-		a->j = 0;
-		while (a->c[a->pid][a->j])
-			free(a->c[a->pid][a->j++]);
-		a->i[a->pid] = 0;
-	}
-	a->i[a->pid]++;
-}
-
-void	sig_handler(int sig, siginfo_t *siginfo, void *context)
-{
-	static t_handler	a;
-
-	a.sig = sig;
-	a.pid = siginfo->si_pid;
-	(void)context;
-	if (a.pid < 1)
-		return ;
-	if (a.flag[a.pid] == 0 && sig == SIGUSR1)
-	{
-		ft_printf("Connection established with %d\n", a.pid);
-		a.flag[a.pid] = 1;
-		kill(a.pid, SIGUSR1);
-	}
-	else if (a.flag[a.pid] == 1)
-	{
-		if (a.i[a.pid] > INT_MAX / 1024)
-			ft_printf("Error: massage of %d is to long\n", a.pid);
-		handler_helper(&a);
-	}
-	kill(a.pid, SIGUSR1);
-}
+static void	server_sig_handler(int sig, siginfo_t *info, void *ucontext);
+static void	sig_int(int sig, siginfo_t *info, void *ucontext);
 
 int	main(void)
 {
 	struct sigaction	sa;
+	struct sigaction	sa_int;
 
+	ft_bzero(&sa, sizeof(sa));
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = sig_handler;
+	sa.sa_sigaction = &server_sig_handler;
+	ft_bzero(&sa_int, sizeof(sa_int));
+	sa_int.sa_sigaction = &sig_int;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
+	sigaction(SIGINT, &sa_int, NULL);
 	ft_printf("Server PID: %d\n", getpid());
 	while (1)
-		pause();
+		usleep(100000);
+	return (0);
+}
+
+void	server_sig_handler(int signal, siginfo_t *info, void *context)
+{
+	int			*pids;
+	t_client	*clients;
+	int			index;
+	int			empty_pos;
+
+	(void)context;
+	clients = get_clients();
+	pids = get_pids();
+	index = get_index(info->si_pid, pids, false);
+	empty_pos = get_index(0, pids, true);
+	if (index >> 31 && signal == SIGUSR1)
+		new_client(info->si_pid, clients, pids, empty_pos);
+	else
+	{
+		interpreter(&clients[index], signal);
+		clients[index].timeout = utime();
+		kill(info->si_pid, SIGUSR1);
+	}
+}
+
+void	sig_int(int sig, siginfo_t *info, void *ucontext)
+{
+	int			i;
+	t_client	*clients;
+	int			*pids;
+
+	(void)info;
+	(void)ucontext;
+	(void)sig;
+	clients = get_clients();
+	pids = get_pids();
+	ft_putstr_fd("\nShutting down Server...\n", 1);
+	ft_putstr_fd("clean up clients...\n", 1);
+	i = -1;
+	while (++i < 256)
+		delete_client(i, clients, pids);
+	ft_putstr_fd("Done\n", 1);
+	exit(0);
 }
